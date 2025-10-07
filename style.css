@@ -1,0 +1,151 @@
+/* ======================================= */
+/* 1. Reset Dasar & Font */
+/* ======================================= */
+body {
+    /* Menggunakan font yang lembut dan mudah dibaca */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    
+    /* Warna latar belakang cerah (misalnya, soft yellow) */
+    background-color: #FFF7DA; 
+    
+    /* Memastikan konten mengisi seluruh viewport */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Mengatur header dan paragraf utama */
+h1, h2, h3, p {
+    color: #4A4A4A; /* Warna teks abu-abu lembut */
+    text-align: center;
+}
+
+/* ======================================= */
+/* 2. Tata Letak Utama (Main Container) */
+/* ======================================= */
+main {
+    /* Membuat wadah utama terlihat menonjol dan lembut */
+    background-color: #FFFFFF;
+    padding: 30px;
+    border-radius: 25px; /* Sudut membulat untuk kesan gemas */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Bayangan lembut */
+    max-width: 500px;
+    width: 90%;
+}
+
+/* ======================================= */
+/* 3. Tampilan Timer */
+/* ======================================= */
+#timer-display {
+    text-align: center;
+    padding: 20px 0;
+}
+
+#modeLabel {
+    /* Warna header mode (misalnya, soft pink) */
+    color: #FFB3C0; 
+    font-size: 1.5em;
+    margin-bottom: 5px;
+}
+
+#timeDisplay {
+    font-size: 5em;
+    font-weight: bold;
+    color: #5BC0DE; /* Warna biru muda yang cerah */
+    margin: 10px 0 20px 0;
+}
+
+/* ======================================= */
+/* 4. Tombol Kontrol */
+/* ======================================= */
+#timer-controls {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 30px;
+    gap: 10px; /* Jarak antar tombol */
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 20px; /* Sudut sangat membulat */
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Tombol Mulai/Pause - Warna utama (misalnya, soft green) */
+#startPause {
+    background-color: #A9D18E; 
+    color: white;
+}
+#startPause:hover {
+    background-color: #92C079;
+    transform: translateY(-2px);
+}
+
+/* Tombol Reset/Lewati - Warna sekunder (misalnya, soft orange) */
+#reset, #skip {
+    background-color: #FFD966;
+    color: #4A4A4A;
+}
+#reset:hover, #skip:hover {
+    background-color: #FFC94D;
+    transform: translateY(-2px);
+}
+
+/* ======================================= */
+/* 5. Pengaturan & Status */
+/* ======================================= */
+#timer-settings, #timer-status {
+    padding: 15px;
+    border: 1px dashed #E0E0E0; /* Border putus-putus untuk kesan lucu */
+    border-radius: 15px;
+    margin-top: 20px;
+    background-color: #F8F8F8;
+}
+
+#timer-settings h3 {
+    color: #FFB3C0; /* Menggunakan warna pink cerah lagi */
+    margin-top: 0;
+}
+
+/* Input angka */
+input[type="number"] {
+    padding: 8px;
+    border: 1px solid #DEDEDE;
+    border-radius: 10px;
+    width: 60px;
+    text-align: center;
+    margin-left: 10px;
+}
+
+/* Status */
+#timer-status p {
+    text-align: left;
+    margin: 5px 0;
+}
+#status {
+    font-weight: bold;
+    color: #5BC0DE; /* Warna status sesuai warna timer */
+}
+#sessions {
+    font-weight: bold;
+    color: #A9D18E; /* Warna sesi sesuai warna tombol start */
+}
+
+
+/* ======================================= */
+/* 6. Footer */
+/* ======================================= */
+footer {
+    margin-top: 30px;
+    color: #B0B0B0; /* Warna abu-abu yang sangat lembut */
+    font-size: 0.9em;
+}
