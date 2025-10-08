@@ -60,7 +60,7 @@ main {
 }
 
 /* ======================================= */
-/* 4. Tombol Kontrol */
+/* 4. Tombol Kontrol (Diubah untuk Efek 3D) */
 /* ======================================= */
 #timer-controls {
     display: flex;
@@ -70,35 +70,65 @@ main {
 }
 
 button {
-    padding: 12px 20px;
+    /* --- PERUBAHAN 1: Menambah padding bawah dan posisi --- */
+    padding: 12px 20px 16px 20px; /* Tambah padding bawah untuk kedalaman */
+    position: relative;             /* Diperlukan untuk efek 3D */
+    /* -------------------------------------------------------- */
+    
     border: none;
-    border-radius: 20px; /* Sudut sangat membulat */
+    border-radius: 20px; 
     font-size: 1em;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Ubah transisi agar efek klik lebih cepat dan halus */
+    transition: background-color 0.2s, transform 0.05s, box-shadow 0.05s;
+    
+    /* Hapus box-shadow default di sini karena akan didefinisikan per tombol */
+    /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */ 
 }
 
-/* Tombol Mulai/Pause - Warna utama (misalnya, soft green) */
+/* --- PERUBAHAN 2: Mendefinisikan Bayangan 3D per tombol --- */
+
+/* Tombol Mulai/Pause - Warna utama (soft green) */
 #startPause {
     background-color: #A9D18E; 
     color: white;
+    /* Bayangan 3D Hijau Tua (Kedalaman) */
+    box-shadow: 0 5px 0 #7A9B67; 
 }
 #startPause:hover {
     background-color: #92C079;
-    transform: translateY(-2px);
+    /* Hapus transform: translateY(-2px); agar tidak bertabrakan dengan efek active */
+    /* transform: translateY(-2px); */
 }
 
-/* Tombol Reset/Lewati - Warna sekunder (misalnya, soft orange) */
+/* Tombol Reset/Lewati - Warna sekunder (soft orange) */
 #reset, #skip {
     background-color: #FFD966;
     color: #4A4A4A;
+    /* Bayangan 3D Coklat Tua (Kedalaman) */
+    box-shadow: 0 5px 0 #CCAA4D;
 }
 #reset:hover, #skip:hover {
     background-color: #FFC94D;
-    transform: translateY(-2px);
+    /* Hapus transform: translateY(-2px); */
+    /* transform: translateY(-2px); */
 }
+
+/* --- PERUBAHAN 3: Efek Saat Tombol Diklik (Wajib untuk 3D) --- */
+
+button:active {
+    /* Menggeser tombol ke bawah, menciptakan ilusi 'klik' */
+    transform: translateY(4px); 
+    
+    /* Menghilangkan bayangan, membuat tombol terlihat 'masuk' ke dalam layar */
+    box-shadow: none !important; 
+    
+    /* Mengurangi padding untuk menyamakan tinggi tombol yang bergeser */
+    padding: 12px 20px 12px 20px; 
+}
+
+/* ----------------------------------------------------------------- */
 
 /* ======================================= */
 /* 5. Pengaturan & Status */
