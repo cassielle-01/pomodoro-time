@@ -171,10 +171,7 @@ function skipSession() {
  * CATATAN: Anda perlu menyediakan file audio (misalnya 'bell.mp3')
  */
 function playNotificationSound() {
-    // Ganti 'bell.mp3' dengan path file suara yang Anda miliki
-    // Untuk pengembangan awal, Anda bisa menggunakan suara dari luar:
-    // const sound = new Audio('https://www.soundjay.com/misc/bell-ringing-01.mp3'); 
-    // sound.play().catch(e => console.error("Gagal memutar suara:", e));
+    // Ganti '_Time's up! Yay!_.mp3' dengan path file suara yang Anda miliki
     
     // Atau buat notifikasi sederhana di browser jika suara tidak tersedia:
     alert(`${isFocusMode ? 'ISTIRAHAT' : 'FOKUS'}! Waktu sesi telah habis.`);
