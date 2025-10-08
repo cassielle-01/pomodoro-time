@@ -168,7 +168,7 @@ function skipSession() {
 
 /**
  * Fungsi Pengingat: Memutar suara notifikasi.
- * CATATAN: Anda perlu menyediakan file audio (misalnya 'bell.mp3')
+ * CATATAN: Anda perlu menyediakan file audio (misalnya 'bell.mp3_Time's up! Yay!_.mp3')
  */
 function playNotificationSound() {
     // Ganti '_Time's up! Yay!_.mp3' dengan path file suara yang Anda miliki
