@@ -168,13 +168,32 @@ function skipSession() {
 
 /**
  * Fungsi Pengingat: Memutar suara notifikasi.
- * CATATAN: Anda perlu menyediakan file audio (misalnya 'bell.mp3_Time's up! Yay!_.mp3')
  */
 function playNotificationSound() {
-    // Ganti '_Time's up! Yay!_.mp3' dengan path file suara yang Anda miliki
+    // KOREKSI 1: Menggunakan nama file yang benar dari repositori Anda
+    const soundPath = 'audio.mp3'; // Gunakan backslash untuk escape kutip tunggal
     
-    // Atau buat notifikasi sederhana di browser jika suara tidak tersedia:
-    alert(`${isFocusMode ? 'ISTIRAHAT' : 'FOKUS'}! Waktu sesi telah habis.`);
+    // KOREKSI 2: Implementasi memutar audio dengan penanganan error
+    try {
+        const sound = new Audio(soundPath);
+        
+        // Coba putar suara. Browser modern sering memblokir .play()
+        // jika pengguna belum berinteraksi dengan halaman (e.g., klik tombol).
+        sound.play().catch(error => {
+            console.error("Gagal memutar audio, kemungkinan diblokir oleh browser:", error);
+            
+            // Fallback (alternatif) jika browser memblokir suara
+            alert(`${isFocusMode ? 'ISTIRAHAT' : 'FOKUS'}! Waktu sesi telah habis.`);
+        });
+        
+    } catch (e) {
+        // Fallback jika terjadi error umum (misalnya file tidak ditemukan)
+        console.error("Error saat membuat objek Audio:", e);
+        alert(`${isFocusMode ? 'ISTIRAHAT' : 'FOKUS'}! Waktu sesi telah habis.`);
+    }
+    
+    // Hapus baris alert() yang tidak perlu jika audio sudah diimplementasikan di atas
+    // alert(`${isFocusMode ? 'ISTIRAHAT' : 'FOKUS'}! Waktu sesi telah habis.`);
 }
 
 /**
