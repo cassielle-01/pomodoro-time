@@ -1,50 +1,572 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Foculo - Pomodoro Timer, calculator, notes</title>
-   <link rel="stylesheet" href="style.css">
-  </head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Produktivitas 3-in-1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            min-height: 500px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Pomodoro Timer Styles */
+        .pomodoro {
+            text-align: center;
+        }
+
+        .timer-display {
+            font-size: 6em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 40px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-label {
+            font-size: 1.5em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .timer-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .timer-btn:hover {
+            background: #5568d3;
+            transform: scale(1.05);
+        }
+
+        .timer-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Calculator Styles */
+        .calculator {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .calc-display {
+            background: #f7f7f7;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            font-size: 2.5em;
+            text-align: right;
+            margin-bottom: 20px;
+            min-height: 80px;
+            word-wrap: break-word;
+            color: #333;
+        }
+
+        .calc-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .calc-btn {
+            background: #f0f0f0;
+            border: none;
+            padding: 25px;
+            font-size: 1.5em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .calc-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .calc-btn:active {
+            transform: scale(0.95);
+        }
+
+        .calc-btn.operator {
+            background: #667eea;
+            color: white;
+        }
+
+        .calc-btn.operator:hover {
+            background: #5568d3;
+        }
+
+        .calc-btn.equals {
+            background: #764ba2;
+            color: white;
+            grid-column: span 2;
+        }
+
+        .calc-btn.equals:hover {
+            background: #653a8a;
+        }
+
+        .calc-btn.clear {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .calc-btn.clear:hover {
+            background: #ee5a52;
+        }
+
+        /* Notes Styles */
+        .notes {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .note-input-section {
+            margin-bottom: 30px;
+        }
+
+        .note-input-section input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .note-input-section textarea {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            min-height: 150px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .add-note-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .add-note-btn:hover {
+            background: #5568d3;
+            transform: scale(1.05);
+        }
+
+        .notes-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .note-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .note-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateX(5px);
+        }
+
+        .note-item h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .note-item p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .note-item small {
+            color: #999;
+            font-style: italic;
+        }
+
+        .note-item button {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .note-item button:hover {
+            background: #ee5a52;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 60px 20px;
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .timer-display {
+                font-size: 4em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .calc-btn {
+                padding: 20px;
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
 <body>
-  <main>
-    <h1>Pomodoro Timer</h1>
-    <p>Fokus 25 menit, istirahat 5 menit. Klik Mulai untuk memulai.</p>
+    <div class="container">
+        <header>
+            <h1>🚀 Aplikasi Produktivitas</h1>
+            <p>Pomodoro Timer • Calculator • Notes</p>
+        </header>
 
-    <section id="timer-display">
-      <h2 id="modeLabel">Fokus</h2>
-      <div id="timeDisplay">25:00</div>
-    </section>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('pomodoro')">⏰ Pomodoro</button>
+            <button class="tab-btn" onclick="switchTab('calculator')">🔢 Calculator</button>
+            <button class="tab-btn" onclick="switchTab('notes')">📝 Notes</button>
+        </div>
 
-    <section id="timer-controls">
-      <button id="startPause">Mulai</button>
-      <button id="reset">Reset</button>
-      <button id="skip">Lewati</button>
-    </section>
+        <div class="content">
+            <!-- Pomodoro Timer -->
+            <div id="pomodoro" class="tab-content active">
+                <div class="pomodoro">
+                    <div class="timer-label" id="timer-label">Waktu Fokus</div>
+                    <div class="timer-display" id="timer-display">25:00</div>
+                    <div class="timer-controls">
+                        <button class="timer-btn" onclick="startTimer()">▶️ Mulai</button>
+                        <button class="timer-btn" onclick="pauseTimer()">⏸️ Pause</button>
+                        <button class="timer-btn" onclick="resetTimer()">🔄 Reset</button>
+                    </div>
+                </div>
+            </div>
 
-    <section id="timer-settings">
-      <h3>Pengaturan</h3>
-      <div>
-        <label>Waktu Fokus (menit):
-          <input type="number" id="focusTime" value="25" min="1" max="180">
-        </label>
-      </div>
-      <div style="margin-top: 15px;">
-        <label>Waktu Istirahat (menit):
-          <input type="number" id="breakTime" value="5" min="1" max="60">
-        </label>
-      </div>
-    </section>
+            <!-- Calculator -->
+            <div id="calculator" class="tab-content">
+                <div class="calculator">
+                    <div class="calc-display" id="calc-display">0</div>
+                    <div class="calc-buttons">
+                        <button class="calc-btn clear" onclick="clearCalc()">C</button>
+                        <button class="calc-btn operator" onclick="appendCalc('/')">/</button>
+                        <button class="calc-btn operator" onclick="appendCalc('*')">×</button>
+                        <button class="calc-btn operator" onclick="deleteCalc()">←</button>
+                        
+                        <button class="calc-btn" onclick="appendCalc('7')">7</button>
+                        <button class="calc-btn" onclick="appendCalc('8')">8</button>
+                        <button class="calc-btn" onclick="appendCalc('9')">9</button>
+                        <button class="calc-btn operator" onclick="appendCalc('-')">-</button>
+                        
+                        <button class="calc-btn" onclick="appendCalc('4')">4</button>
+                        <button class="calc-btn" onclick="appendCalc('5')">5</button>
+                        <button class="calc-btn" onclick="appendCalc('6')">6</button>
+                        <button class="calc-btn operator" onclick="appendCalc('+')">+</button>
+                        
+                        <button class="calc-btn" onclick="appendCalc('1')">1</button>
+                        <button class="calc-btn" onclick="appendCalc('2')">2</button>
+                        <button class="calc-btn" onclick="appendCalc('3')">3</button>
+                        <button class="calc-btn" onclick="appendCalc('.')">.</button>
+                        
+                        <button class="calc-btn" onclick="appendCalc('0')">0</button>
+                        <button class="calc-btn equals" onclick="calculateResult()">=</button>
+                    </div>
+                </div>
+            </div>
 
-    <section id="timer-status">
-      <p>Sesi selesai: <span id="sessions">0</span></p>
-      <p>Status: <span id="status">Berhenti</span></p>
-    </section>
-  </main>
+            <!-- Notes -->
+            <div id="notes" class="tab-content">
+                <div class="notes">
+                    <div class="note-input-section">
+                        <input type="text" id="note-title" placeholder="Judul Catatan...">
+                        <textarea id="note-content" placeholder="Tulis catatan kamu di sini..."></textarea>
+                        <button class="add-note-btn" onclick="addNote()">➕ Tambah Catatan</button>
+                    </div>
+                    <div class="notes-list" id="notes-list">
+                        <div class="empty-state">📝 Belum ada catatan. Mulai tambahkan catatan pertamamu!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  <footer>
-    <p>© <span id="currentYear">2025</span> — Dibuat untuk latihan TIK</p>
-  </footer>
-      <script src="script.js"></script>
-  </body>
+    <script>
+        // Tab Switching
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-btn');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Pomodoro Timer
+        let timerInterval;
+        let timeLeft = 1500; // 25 minutes in seconds
+        let isRunning = false;
+        let isBreak = false;
+
+        function updateDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer-display').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                timerInterval = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateDisplay();
+                    } else {
+                        pauseTimer();
+                        alert(isBreak ? 'Waktu istirahat selesai!' : 'Waktu fokus selesai! Waktunya istirahat.');
+                        isBreak = !isBreak;
+                        timeLeft = isBreak ? 300 : 1500; // 5 min break or 25 min focus
+                        document.getElementById('timer-label').textContent = 
+                            isBreak ? 'Waktu Istirahat' : 'Waktu Fokus';
+                        updateDisplay();
+                    }
+                }, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            isRunning = false;
+            clearInterval(timerInterval);
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            isBreak = false;
+            timeLeft = 1500;
+            document.getElementById('timer-label').textContent = 'Waktu Fokus';
+            updateDisplay();
+        }
+
+        // Calculator
+        let calcDisplay = '0';
+        let calcExpression = '';
+
+        function updateCalcDisplay() {
+            document.getElementById('calc-display').textContent = calcDisplay;
+        }
+
+        function appendCalc(value) {
+            if (calcDisplay === '0' && value !== '.') {
+                calcDisplay = value;
+            } else {
+                calcDisplay += value;
+            }
+            updateCalcDisplay();
+        }
+
+        function clearCalc() {
+            calcDisplay = '0';
+            calcExpression = '';
+            updateCalcDisplay();
+        }
+
+        function deleteCalc() {
+            if (calcDisplay.length > 1) {
+                calcDisplay = calcDisplay.slice(0, -1);
+            } else {
+                calcDisplay = '0';
+            }
+            updateCalcDisplay();
+        }
+
+        function calculateResult() {
+            try {
+                const result = eval(calcDisplay);
+                calcDisplay = result.toString();
+                updateCalcDisplay();
+            } catch (error) {
+                calcDisplay = 'Error';
+                updateCalcDisplay();
+                setTimeout(() => {
+                    calcDisplay = '0';
+                    updateCalcDisplay();
+                }, 1500);
+            }
+        }
+
+        // Notes
+        let notes = [];
+
+        function addNote() {
+            const title = document.getElementById('note-title').value.trim();
+            const content = document.getElementById('note-content').value.trim();
+            
+            if (!title || !content) {
+                alert('Judul dan isi catatan tidak boleh kosong!');
+                return;
+            }
+
+            const note = {
+                id: Date.now(),
+                title: title,
+                content: content,
+                date: new Date().toLocaleString('id-ID')
+            };
+
+            notes.unshift(note);
+            document.getElementById('note-title').value = '';
+            document.getElementById('note-content').value = '';
+            displayNotes();
+        }
+
+        function deleteNote(id) {
+            if (confirm('Yakin ingin menghapus catatan ini?')) {
+                notes = notes.filter(note => note.id !== id);
+                displayNotes();
+            }
+        }
+
+        function displayNotes() {
+            const notesList = document.getElementById('notes-list');
+            
+            if (notes.length === 0) {
+                notesList.innerHTML = '<div class="empty-state">📝 Belum ada catatan. Mulai tambahkan catatan pertamamu!</div>';
+                return;
+            }
+
+            notesList.innerHTML = notes.map(note => `
+                <div class="note-item">
+                    <h3>${note.title}</h3>
+                    <p>${note.content}</p>
+                    <small>📅 ${note.date}</small>
+                    <br>
+                    <button onclick="deleteNote(${note.id})">🗑️ Hapus</button>
+                </div>
+            `).join('');
+        }
+
+        // Initialize
+        updateDisplay();
+        displayNotes();
+    </script>
+</body>
 </html>
