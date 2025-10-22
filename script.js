@@ -1,214 +1,227 @@
-// =======================================
-// 1. Variabel Utama (Elements & State)
-// =======================================
+// Tab Switching
+function switchTab(tabName) {
+    const tabs = document.querySelectorAll('.tab-content');
+    const buttons = document.querySelectorAll('.tab-btn');
+    
+    tabs.forEach(tab => tab.classList.remove('active'));
+    buttons.forEach(btn => btn.classList.remove('active'));
+    
+    document.getElementById(tabName).classList.add('active');
+    event.target.classList.add('active');
+}
 
-// Ambil elemen-elemen dari HTML
-const timeDisplay = document.getElementById('timeDisplay');
-const modeLabel = document.getElementById('modeLabel');
-const startPauseButton = document.getElementById('startPause');
-const resetButton = document.getElementById('reset');
-const skipButton = document.getElementById('skip');
-const focusTimeInput = document.getElementById('focusTime');
-const breakTimeInput = document.getElementById('breakTime');
-const sessionsDisplay = document.getElementById('sessions');
-const statusDisplay = document.getElementById('status');
-
-// Variabel status timer
+// ===== POMODORO TIMER =====
+let timerInterval;
+let timeLeft = 1500; // 25 minutes in seconds
 let isRunning = false;
-let isFocusMode = true;
-let totalSeconds = 0;
-let secondsRemaining = 0;
-let timerInterval = null;
-let sessionsCompleted = 0;
+let isBreak = false;
 
-// =======================================
-// 2. Fungsi Utama Timer
-// =======================================
-
-/**
- * Memulai atau menghentikan (pause) timer.
- */
-function startPauseTimer() {
-    if (isRunning) {
-        // Menghentikan (Pause)
-        clearInterval(timerInterval);
-        isRunning = false;
-        startPauseButton.textContent = 'Lanjut';
-        statusDisplay.textContent = 'Jeda';
-    } else {
-        // Memulai (Start)
-        isRunning = true;
-        startPauseButton.textContent = 'Jeda';
-        statusDisplay.textContent = isFocusMode ? 'Fokus' : 'Istirahat';
-
-        // Setel waktu jika ini adalah kali pertama dimulai atau setelah reset
-        if (secondsRemaining === 0) {
-            setupTimer();
-        }
-
-        // Mulai hitungan mundur setiap 1 detik
-        timerInterval = setInterval(countdown, 1000);
-    }
-}
-
-/**
- * Fungsi hitungan mundur yang berjalan setiap detik.
- */
-function countdown() {
-    secondsRemaining--;
-
-    if (secondsRemaining < 0) {
-        // Waktu habis!
-        clearInterval(timerInterval);
-        
-        // 🚨 PENGINGAT (Audio)
-        playNotificationSound(); 
-        
-        // Ganti mode
-        toggleMode();
-        
-        // Mulai mode baru secara otomatis
-        startPauseTimer(); 
-    } else {
-        updateDisplay();
-    }
-}
-
-/**
- * Memperbarui tampilan waktu di HTML.
- */
 function updateDisplay() {
-    const minutes = Math.floor(secondsRemaining / 60);
-    const seconds = secondsRemaining % 60;
-    
-    // Format waktu menjadi MM:SS (misalnya 05:03)
-    const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    timeDisplay.textContent = formattedTime;
-    
-    // Opsional: Perbarui title browser untuk melihat waktu saat minimize
-    document.title = formattedTime + (isFocusMode ? ' (Fokus)' : ' (Break)');
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    document.getElementById('timer-display').textContent = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-/**
- * Mengganti mode dari Fokus ke Istirahat, atau sebaliknya.
- */
-function toggleMode() {
-    if (isFocusMode) {
-        // Sesi fokus selesai
-        sessionsCompleted++;
-        sessionsDisplay.textContent = sessionsCompleted;
-        isFocusMode = false;
-        modeLabel.textContent = 'Istirahat';
-        modeLabel.style.color = '#A9D18E'; // Warna hijau (Sesuai CSS)
-    } else {
-        // Sesi istirahat selesai
-        isFocusMode = true;
-        modeLabel.textContent = 'Fokus';
-        modeLabel.style.color = '#FFB3C0'; // Warna pink (Sesuai CSS)
+function startTimer() {
+    if (!isRunning) {
+        isRunning = true;
+        timerInterval = setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft--;
+                updateDisplay();
+            } else {
+                pauseTimer();
+                alert(isBreak ? 'Waktu istirahat selesai! Yuk lanjut fokus lagi! 💪' : 'Waktu fokus selesai! Waktunya istirahat sebentar! ☕');
+                isBreak = !isBreak;
+                timeLeft = isBreak ? 300 : 1500; // 5 min break or 25 min focus
+                document.getElementById('timer-label').textContent = 
+                    isBreak ? '☕ Waktu Istirahat' : '📚 Waktu Fokus';
+                updateDisplay();
+            }
+        }, 1000);
     }
-    
-    // Siapkan timer untuk mode yang baru
-    setupTimer();
 }
 
-/**
- * Mengambil nilai dari input dan menyiapkan timer.
- */
-function setupTimer() {
-    const focusMinutes = parseInt(focusTimeInput.value);
-    const breakMinutes = parseInt(breakTimeInput.value);
+function pauseTimer() {
+    isRunning = false;
+    clearInterval(timerInterval);
+}
 
-    if (isFocusMode) {
-        totalSeconds = focusMinutes * 60;
-    } else {
-        totalSeconds = breakMinutes * 60;
-    }
-    
-    secondsRemaining = totalSeconds;
+function resetTimer() {
+    pauseTimer();
+    isBreak = false;
+    timeLeft = 1500;
+    document.getElementById('timer-label').textContent = '📚 Waktu Fokus';
     updateDisplay();
 }
 
-/**
- * Mereset timer kembali ke mode Fokus awal.
- */
-function resetTimer() {
-    clearInterval(timerInterval);
-    isRunning = false;
-    isFocusMode = true;
-    sessionsCompleted = 0;
-    sessionsDisplay.textContent = '0';
-    
-    // Setel ulang tampilan dan tombol
-    setupTimer(); // Panggil ini untuk setel ulang waktu ke nilai input
-    startPauseButton.textContent = 'Mulai';
-    modeLabel.textContent = 'Fokus';
-    modeLabel.style.color = '#FFB3C0'; 
-    statusDisplay.textContent = 'Berhenti';
-    document.title = 'Pomodoro Timer';
+// ===== CALCULATOR =====
+let calcDisplay = '0';
+let calcExpression = '';
+
+function updateCalcDisplay() {
+    document.getElementById('calc-display').textContent = calcDisplay;
 }
 
-/**
- * Melompati sesi saat ini.
- */
-function skipSession() {
-    clearInterval(timerInterval);
-    isRunning = false;
-    
-    // Ganti mode (Fokus -> Istirahat, atau sebaliknya)
-    toggleMode();
-    
-    // Reset tombol
-    startPauseButton.textContent = 'Mulai';
-    statusDisplay.textContent = 'Berhenti';
-}
-
-// =======================================
-// 3. Pengingat dan Setup Awal
-// =======================================
-
-/**
- * Fungsi Pengingat: Memutar suara notifikasi.
- */
-function playNotificationSound() {
-    // KOREKSI 1: Menggunakan nama file yang benar dari repositori Anda
-    const soundPath = 'audio.mp3'; // Gunakan backslash untuk escape kutip tunggal
-    
-    // KOREKSI 2: Implementasi memutar audio dengan penanganan error
-    try {
-        const sound = new Audio(soundPath);
-        
-        // Coba putar suara. Browser modern sering memblokir .play()
-        // jika pengguna belum berinteraksi dengan halaman (e.g., klik tombol).
-        sound.play().catch(error => {
-            console.error("Gagal memutar audio, kemungkinan diblokir oleh browser:", error);
-            
-            // Fallback (alternatif) jika browser memblokir suara
-            alert(`${isFocusMode ? 'ISTIRAHAT' : 'FOKUS'}! Waktu sesi telah habis.`);
-        });
-        
-    } catch (e) {
-        // Fallback jika terjadi error umum (misalnya file tidak ditemukan)
-        console.error("Error saat membuat objek Audio:", e);
-        alert(`${isFocusMode ? 'ISTIRAHAT' : 'FOKUS'}! Waktu sesi telah habis.`);
+function appendCalc(value) {
+    if (calcDisplay === '0' && value !== '.') {
+        calcDisplay = value;
+    } else {
+        calcDisplay += value;
     }
-    
-    // Hapus baris alert() yang tidak perlu jika audio sudah diimplementasikan di atas
-    // alert(`${isFocusMode ? 'ISTIRAHAT' : 'FOKUS'}! Waktu sesi telah habis.`);
+    updateCalcDisplay();
 }
 
-/**
- * Menyiapkan event listeners saat dokumen dimuat.
- */
-document.addEventListener('DOMContentLoaded', () => {
-    // Pasang fungsi ke tombol
-    startPauseButton.addEventListener('click', startPauseTimer);
-    resetButton.addEventListener('click', resetTimer);
-    skipButton.addEventListener('click', skipSession);
+function clearCalc() {
+    calcDisplay = '0';
+    calcExpression = '';
+    updateCalcDisplay();
+}
+
+function deleteCalc() {
+    if (calcDisplay.length > 1) {
+        calcDisplay = calcDisplay.slice(0, -1);
+    } else {
+        calcDisplay = '0';
+    }
+    updateCalcDisplay();
+}
+
+function calculateResult() {
+    try {
+        const result = eval(calcDisplay);
+        calcDisplay = result.toString();
+        updateCalcDisplay();
+    } catch (error) {
+        calcDisplay = 'Error';
+        updateCalcDisplay();
+        setTimeout(() => {
+            calcDisplay = '0';
+            updateCalcDisplay();
+        }, 1500);
+    }
+}
+
+// ===== NOTES =====
+let notes = [];
+
+function addNote() {
+    const title = document.getElementById('note-title').value.trim();
+    const content = document.getElementById('note-content').value.trim();
     
-    // Pasang fungsi untuk mengupdate waktu saat input berubah
-    focusTimeInput.addEventListener('change', setupTimer);
-    breakTimeInput.addEventListener('change', setupTimer);
+    if (!title || !content) {
+        alert('Judul dan isi catatan tidak boleh kosong! ✏️');
+        return;
+    }
+
+    const note = {
+        id: Date.now(),
+        title: title,
+        content: content,
+        date: new Date().toLocaleString('id-ID')
+    };
+
+    notes.unshift(note);
+    document.getElementById('note-title').value = '';
+    document.getElementById('note-content').value = '';
+    displayNotes();
     
-    // Inisialisasi tampilan waktu awal
-    setupTimer();
+    // Animasi feedback
+    const addBtn = document.querySelector('.add-note-btn');
+    addBtn.textContent = '✅ Berhasil Ditambahkan!';
+    setTimeout(() => {
+        addBtn.textContent = '➕ Tambah Catatan';
+    }, 2000);
+}
+
+function deleteNote(id) {
+    if (confirm('Yakin ingin menghapus catatan ini? 🗑️')) {
+        notes = notes.filter(note => note.id !== id);
+        displayNotes();
+    }
+}
+
+function displayNotes() {
+    const notesList = document.getElementById('notes-list');
+    
+    if (notes.length === 0) {
+        notesList.innerHTML = '<div class="empty-state">📝 Belum ada catatan. Mulai tambahkan catatan pertamamu!</div>';
+        return;
+    }
+
+    notesList.innerHTML = notes.map(note => `
+        <div class="note-item">
+            <h3>${note.title}</h3>
+            <p>${note.content}</p>
+            <small>📅 ${note.date}</small>
+            <br>
+            <button onclick="deleteNote(${note.id})">🗑️ Hapus</button>
+        </div>
+    `).join('');
+}
+
+// ===== INITIALIZE =====
+// Jalankan fungsi-fungsi ini saat halaman pertama kali dibuka
+updateDisplay();
+displayNotes();
+
+// Keyboard support untuk calculator
+document.addEventListener('keydown', function(event) {
+    const key = event.key;
+    
+    // Cek apakah sedang di tab calculator
+    const calcTab = document.getElementById('calculator');
+    if (!calcTab.classList.contains('active')) return;
+    
+    // Angka 0-9
+    if (key >= '0' && key <= '9') {
+        appendCalc(key);
+    }
+    // Operator
+    else if (key === '+' || key === '-' || key === '*' || key === '/') {
+        appendCalc(key);
+    }
+    // Titik desimal
+    else if (key === '.') {
+        appendCalc('.');
+    }
+    // Enter untuk hitung hasil
+    else if (key === 'Enter') {
+        event.preventDefault();
+        calculateResult();
+    }
+    // Backspace untuk hapus
+    else if (key === 'Backspace') {
+        event.preventDefault();
+        deleteCalc();
+    }
+    // Escape untuk clear
+    else if (key === 'Escape') {
+        clearCalc();
+    }
 });
+
+// Keyboard support untuk notes (Ctrl/Cmd + Enter untuk tambah catatan)
+document.addEventListener('keydown', function(event) {
+    const notesTab = document.getElementById('notes');
+    if (!notesTab.classList.contains('active')) return;
+    
+    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        event.preventDefault();
+        addNote();
+    }
+});
+
+// Notifikasi motivasi setiap pomodoro selesai
+let pomodoroCount = 0;
+const motivationalMessages = [
+    "Keren! Kamu sudah menyelesaikan 1 sesi fokus! 🎉",
+    "Luar biasa! Keep up the good work! 💪",
+    "Amazing! Produktivitas level maksimal! ⭐",
+    "Hebat sekali! Kamu memang juara! 🏆",
+    "Mantap! Terus semangat ya! 🔥"
+];
+
+// Update fungsi startTimer untuk menambahkan motivasi
+const originalStartTimer = startTimer;
