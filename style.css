@@ -89,6 +89,7 @@ body {
     color: #ff69b4;
     font-size: 2em;
     margin-bottom: 30px;
+    text-align: center; /* ← SUDAH ADA, tapi saya tambahkan lagi untuk jaga-jaga */
 }
 
 .timer-display {
@@ -97,6 +98,7 @@ body {
     font-weight: bold;
     margin: 30px 0;
     letter-spacing: 5px;
+    text-align: center; /* ← TAMBAHAN */
 }
 
 .timer-controls {
@@ -131,6 +133,7 @@ body {
 .calculator-container {
     max-width: 400px;
     margin: 0 auto;
+    text-align: center; /* ← TAMBAHAN */
 }
 
 .calculator-container h2 {
@@ -181,63 +184,7 @@ body {
 }
 
 .calc-btn.operator {
-    background: #ff69b4;
-}
-
-.calc-btn.equals {
-    background: #ff1493;
-    grid-column: span 2;
-}
-
-.calc-btn.clear {
-    background: #ff6b9d;
-    grid-column: span 2;
-}
-
-/* Notes Styles */
-.notes-container h2 {
-    color: #ff69b4;
-    font-size: 2em;
-    margin-bottom: 20px;
-}
-
-.notes-input {
-    width: 100%;
-    min-height: 300px;
-    padding: 20px;
-    font-size: 1.1em;
-    border: 3px solid #ffb6c1;
-    border-radius: 10px;
-    resize: vertical;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #fff5f7;
-    color: #333;
-}
-
-.notes-input:focus {
-    outline: none;
-    border-color: #ff69b4;
-}
-
-.notes-info {
-    margin-top: 15px;
-    color: #ff69b4;
-    font-size: 0.9em;
-    text-align: right;
-}
-
-@media (max-width: 600px) {
-    .header h1 {
-        font-size: 1.8em;
-    }
-
-    .timer-display {
-        font-size: 3em;
-    }
-
-    .content-container {
-        padding: 20px;
-    }
+    b
 
     .calc-btn {
         padding: 20px;
