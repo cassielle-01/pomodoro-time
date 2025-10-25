@@ -11,9 +11,10 @@ function switchTab(tabName) {
 }
 
 // Pomodoro Timer
-let timeLeft = 25 * 60;
+let timeLeft;
 let timerInterval = null;
 let isRunning = false;
+let isFocusMode = true;
 
 // Audio notification
 const alarmSound = new Audio('audio.mp3'); // Ganti dengan nama file suara Anda
@@ -27,6 +28,12 @@ function updateDisplay() {
 
 function startTimer() {
     if (!isRunning) {
+        // Inisialisasi timeLeft jika belum ada
+        if (timeLeft === undefined) {
+            const focusMin = parseInt(document.getElementById('focusMinutes').value) || 25;
+            timeLeft = focusMin * 60;
+        }
+        
         isRunning = true;
         timerInterval = setInterval(() => {
             if (timeLeft > 0) {
@@ -35,7 +42,22 @@ function startTimer() {
             } else {
                 pauseTimer();
                 playAlarm();
-                alert('⏰ Waktu fokus selesai! Saatnya istirahat.');
+                
+                // Alert dan ganti mode
+                if (isFocusMode) {
+                    alert('⏰ Waktu fokus selesai! Saatnya istirahat.');
+                    isFocusMode = false;
+                    document.getElementById('timerMode').textContent = 'Mode: Istirahat';
+                    const breakMin = parseInt(document.getElementById('breakMinutes').value) || 5;
+                    timeLeft = breakMin * 60;
+                } else {
+                    alert('⏰ Waktu istirahat selesai! Kembali fokus.');
+                    isFocusMode = true;
+                    document.getElementById('timerMode').textContent = 'Mode: Fokus';
+                    const focusMin = parseInt(document.getElementById('focusMinutes').value) || 25;
+                    timeLeft = focusMin * 60;
+                }
+                updateDisplay();
             }
         }, 1000);
     }
@@ -48,8 +70,11 @@ function pauseTimer() {
 
 function resetTimer() {
     pauseTimer();
-    timeLeft = 25 * 60;
+    isFocusMode = true;
+    const focusMin = parseInt(document.getElementById('focusMinutes').value) || 25;
+    timeLeft = focusMin * 60;
     updateDisplay();
+    document.getElementById('timerMode').textContent = 'Mode: Fokus';
 }
 
 function playAlarm() {
@@ -57,6 +82,30 @@ function playAlarm() {
         console.log('Tidak dapat memutar suara:', error);
     });
 }
+
+// Update timer ketika input durasi berubah
+document.addEventListener('DOMContentLoaded', function() {
+    // Inisialisasi timer display
+    const focusMin = parseInt(document.getElementById('focusMinutes').value) || 25;
+    timeLeft = focusMin * 60;
+    updateDisplay();
+    
+    // Event listener untuk perubahan input fokus
+    document.getElementById('focusMinutes').addEventListener('change', function() {
+        if (!isRunning && isFocusMode) {
+            timeLeft = (parseInt(this.value) || 25) * 60;
+            updateDisplay();
+        }
+    });
+    
+    // Event listener untuk perubahan input istirahat
+    document.getElementById('breakMinutes').addEventListener('change', function() {
+        if (!isRunning && !isFocusMode) {
+            timeLeft = (parseInt(this.value) || 5) * 60;
+            updateDisplay();
+        }
+    });
+});
 
 // Calculator
 let calcValue = '0';
@@ -87,15 +136,17 @@ function calculateResult() {
 }
 
 // Notes - Auto Save
-const notesInput = document.getElementById('notesInput');
-
-// Load saved notes
-const savedNotes = localStorage.getItem('notes');
-if (savedNotes) {
-    notesInput.value = savedNotes;
-}
-
-// Auto-save on input
-notesInput.addEventListener('input', () => {
-    localStorage.setItem('notes', notesInput.value);
+document.addEventListener('DOMContentLoaded', function() {
+    const notesInput = document.getElementById('notesInput');
+    
+    // Load saved notes
+    const savedNotes = localStorage.getItem('notes');
+    if (savedNotes) {
+        notesInput.value = savedNotes;
+    }
+    
+    // Auto-save on input
+    notesInput.addEventListener('input', () => {
+        localStorage.setItem('notes', notesInput.value);
+    });
 });
