@@ -1,249 +1,116 @@
-// Tab Switching
-function switchTab(tabName) {
-    const tabs = document.querySelectorAll('.tab-content');
-    const buttons = document.querySelectorAll('.tab-btn');
-    
-    tabs.forEach(tab => tab.classList.remove('active'));
-    buttons.forEach(btn => btn.classList.remove('active'));
-    
-    document.getElementById(tabName).classList.add('active');
-    event.target.classList.add('active');
-}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>foculo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>foculo</h1>
+        <p>Pomodoro Timer • Calculator • Notes</p>
+    </div>
 
-// Pomodoro Timer
-let timeLeft;
-let timerInterval = null;
-let isRunning = false;
-let isFocusMode = true;
+    <div class="tab-buttons">
+        <button class="tab-btn active" onclick="switchTab('pomodoro')">Pomodoro Timer</button>
+        <button class="tab-btn" onclick="switchTab('calculator')">Calculator</button>
+        <button class="tab-btn" onclick="switchTab('notes')">Notes</button>
+    </div>
 
-function updateDisplay() {
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
-    document.getElementById('timerDisplay').textContent = 
-        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-}
-
-function startTimer() {
-    if (!isRunning) {
-        if (timeLeft === undefined) {
-            const focusMin = parseInt(document.getElementById('focusMinutes').value) || 25;
-            timeLeft = focusMin * 60;
-        }
-        
-        isRunning = true;
-        timerInterval = setInterval(() => {
-            if (timeLeft > 0) {
-                timeLeft--;
-                updateDisplay();
-            } else {
-                pauseTimer();
+    <div class="content-container">
+        <!-- Pomodoro Timer -->
+        <div id="pomodoro" class="tab-content active">
+            <div class="pomodoro-container">
+                <h2>Waktu Fokus</h2>
                 
-                if (isFocusMode) {
-                    alert('⏰ Waktu fokus selesai! Saatnya istirahat.');
-                    isFocusMode = false;
-                    document.getElementById('timerMode').textContent = 'Mode: Istirahat';
-                    const breakMin = parseInt(document.getElementById('breakMinutes').value) || 5;
-                    timeLeft = breakMin * 60;
-                } else {
-                    alert('⏰ Waktu istirahat selesai! Kembali fokus.');
-                    isFocusMode = true;
-                    document.getElementById('timerMode').textContent = 'Mode: Fokus';
-                    const focusMin = parseInt(document.getElementById('focusMinutes').value) || 25;
-                    timeLeft = focusMin * 60;
-                }
-                updateDisplay();
-            }
-        }, 1000);
-    }
-}
+                <div class="timer-settings">
+                    <div class="setting-group">
+                        <label>Fokus (menit)</label>
+                        <input type="number" id="focusMinutes" value="25" min="1" max="60">
+                    </div>
+                    <div class="setting-group">
+                        <label>Istirahat (menit)</label>
+                        <input type="number" id="breakMinutes" value="5" min="1" max="30">
+                    </div>
+                </div>
 
-function pauseTimer() {
-    isRunning = false;
-    clearInterval(timerInterval);
-}
-
-function resetTimer() {
-    pauseTimer();
-    isFocusMode = true;
-    const focusMin = parseInt(document.getElementById('focusMinutes').value) || 25;
-    timeLeft = focusMin * 60;
-    updateDisplay();
-    document.getElementById('timerMode').textContent = 'Mode: Fokus';
-}
-
-// Initialize timer
-window.addEventListener('DOMContentLoaded', function() {
-    const focusMin = parseInt(document.getElementById('focusMinutes').value) || 25;
-    timeLeft = focusMin * 60;
-    updateDisplay();
-    
-    document.getElementById('focusMinutes').addEventListener('change', function() {
-        if (!isRunning && isFocusMode) {
-            timeLeft = (parseInt(this.value) || 25) * 60;
-            updateDisplay();
-        }
-    });
-    
-    document.getElementById('breakMinutes').addEventListener('change', function() {
-        if (!isRunning && !isFocusMode) {
-            timeLeft = (parseInt(this.value) || 5) * 60;
-            updateDisplay();
-        }
-    });
-
-    loadNotes();
-});
-
-// Calculator
-let calcValue = '0';
-
-function appendCalc(value) {
-    const display = document.getElementById('calcDisplay');
-    if (calcValue === '0' && value !== '.') {
-        calcValue = value;
-    } else {
-        calcValue += value;
-    }
-    display.value = calcValue;
-}
-
-function clearCalc() {
-    calcValue = '0';
-    document.getElementById('calcDisplay').value = calcValue;
-}
-
-function deleteCalc() {
-    calcValue = calcValue.slice(0, -1) || '0';
-    document.getElementById('calcDisplay').value = calcValue;
-}
-
-function calculateResult() {
-    try {
-        calcValue = eval(calcValue).toString();
-        document.getElementById('calcDisplay').value = calcValue;
-    } catch (e) {
-        document.getElementById('calcDisplay').value = 'Error';
-        calcValue = '0';
-    }
-}
-
-// Notes functionality
-let notes = [];
-let editingNoteId = null;
-
-function loadNotes() {
-    const savedNotes = JSON.parse(localStorage.getItem('foculo_notes') || '[]');
-    notes = savedNotes;
-    renderNotes();
-}
-
-function saveNotesToStorage() {
-    localStorage.setItem('foculo_notes', JSON.stringify(notes));
-}
-
-function renderNotes() {
-    const notesList = document.getElementById('notesList');
-    
-    if (notes.length === 0) {
-        notesList.innerHTML = `
-            <div class="empty-notes">
-                <p>📝 Belum ada catatan</p>
-                <p style="font-size: 0.9em;">Klik "Tambah Catatan" untuk membuat catatan baru</p>
-            </div>
-        `;
-        return;
-    }
-
-    notesList.innerHTML = notes.map(note => `
-        <div class="note-item">
-            <div class="note-title">${note.title || 'Tanpa Judul'}</div>
-            <div class="note-preview">${note.content.substring(0, 100)}${note.content.length > 100 ? '...' : ''}</div>
-            <div class="note-time">📅 ${note.time}</div>
-            <div class="note-actions">
-                <button class="note-action-btn edit-btn" onclick="editNote('${note.id}')">Edit</button>
-                <button class="note-action-btn delete-btn" onclick="deleteNote('${note.id}')">Hapus</button>
+                <div class="timer-mode" id="timerMode">Mode: Fokus</div>
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                
+                <div class="timer-controls">
+                    <button class="timer-btn" onclick="startTimer()">Start</button>
+                    <button class="timer-btn" onclick="pauseTimer()">Pause</button>
+                    <button class="timer-btn" onclick="resetTimer()">Reset</button>
+                </div>
             </div>
         </div>
-    `).join('');
-}
 
-function openNoteModal() {
-    editingNoteId = null;
-    document.getElementById('modalTitle').textContent = 'Tambah Catatan';
-    document.getElementById('noteTitle').value = '';
-    document.getElementById('noteContent').value = '';
-    document.getElementById('noteModal').classList.add('active');
-}
+        <!-- Calculator -->
+        <div id="calculator" class="tab-content">
+            <div class="calculator-container">
+                <h2>Kalkulator</h2>
+                <input type="text" class="calc-display" id="calcDisplay" readonly value="0">
+                <div class="calc-buttons">
+                    <button class="calc-btn clear" onclick="clearCalc()">C</button>
+                    <button class="calc-btn operator" onclick="appendCalc('/')">/</button>
+                    <button class="calc-btn operator" onclick="appendCalc('*')">×</button>
+                    <button class="calc-btn operator" onclick="deleteCalc()">←</button>
+                    
+                    <button class="calc-btn" onclick="appendCalc('7')">7</button>
+                    <button class="calc-btn" onclick="appendCalc('8')">8</button>
+                    <button class="calc-btn" onclick="appendCalc('9')">9</button>
+                    <button class="calc-btn operator" onclick="appendCalc('-')">-</button>
+                    
+                    <button class="calc-btn" onclick="appendCalc('4')">4</button>
+                    <button class="calc-btn" onclick="appendCalc('5')">5</button>
+                    <button class="calc-btn" onclick="appendCalc('6')">6</button>
+                    <button class="calc-btn operator" onclick="appendCalc('+')">+</button>
+                    
+                    <button class="calc-btn" onclick="appendCalc('1')">1</button>
+                    <button class="calc-btn" onclick="appendCalc('2')">2</button>
+                    <button class="calc-btn" onclick="appendCalc('3')">3</button>
+                    <button class="calc-btn equals" onclick="calculateResult()">=</button>
+                    
+                    <button class="calc-btn" onclick="appendCalc('0')">0</button>
+                    <button class="calc-btn" onclick="appendCalc('.')">.</button>
+                </div>
+            </div>
+        </div>
 
-function closeNoteModal() {
-    document.getElementById('noteModal').classList.remove('active');
-}
+        <!-- Notes -->
+        <div id="notes" class="tab-content">
+            <div class="notes-container">
+                <div class="notes-header">
+                    <h2>Catatan</h2>
+                    <button class="add-note-btn" onclick="openNoteModal()">+ Tambah Catatan</button>
+                </div>
+                <div class="notes-list" id="notesList">
+                    <div class="empty-notes">
+                        <p>📝 Belum ada catatan</p>
+                        <p style="font-size: 0.9em;">Klik "Tambah Catatan" untuk membuat catatan baru</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-function saveNote() {
-    const title = document.getElementById('noteTitle').value.trim();
-    const content = document.getElementById('noteContent').value.trim();
-    
-    if (!content) {
-        alert('Isi catatan tidak boleh kosong!');
-        return;
-    }
+    <!-- Modal for Notes -->
+    <div class="modal" id="noteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Tambah Catatan</h3>
+                <button class="close-modal" onclick="closeNoteModal()">×</button>
+            </div>
+            <input type="text" class="modal-input" id="noteTitle" placeholder="Judul catatan...">
+            <textarea class="modal-textarea" id="noteContent" placeholder="Tulis catatan Anda di sini..."></textarea>
+            <div class="modal-actions">
+                <button class="modal-btn cancel-btn" onclick="closeNoteModal()">Batal</button>
+                <button class="modal-btn save-btn" onclick="saveNote()">Simpan</button>
+            </div>
+        </div>
+    </div>
 
-    const now = new Date();
-    const time = now.toLocaleString('id-ID', { 
-        day: '2-digit', 
-        month: '2-digit', 
-        year: 'numeric',
-        hour: '2-digit', 
-        minute: '2-digit' 
-    });
-
-    if (editingNoteId) {
-        const noteIndex = notes.findIndex(n => n.id === editingNoteId);
-        if (noteIndex !== -1) {
-            notes[noteIndex] = {
-                ...notes[noteIndex],
-                title: title || 'Tanpa Judul',
-                content: content,
-                time: time
-            };
-        }
-    } else {
-        const newNote = {
-            id: Date.now().toString(),
-            title: title || 'Note',
-            content: content,
-            time: time
-        };
-        notes.unshift(newNote);
-    }
-
-    saveNotesToStorage();
-    renderNotes();
-    closeNoteModal();
-}
-
-function editNote(id) {
-    const note = notes.find(n => n.id === id);
-    if (note) {
-        editingNoteId = id;
-        document.getElementById('modalTitle').textContent = 'Edit Catatan';
-        document.getElementById('noteTitle').value = note.title;
-        document.getElementById('noteContent').value = note.content;
-        document.getElementById('noteModal').classList.add('active');
-    }
-}
-
-function deleteNote(id) {
-    if (confirm('Hapus catatan ini?')) {
-        notes = notes.filter(n => n.id !== id);
-        saveNotesToStorage();
-        renderNotes();
-    }
-}
-
-// Close modal when clicking outside
-document.getElementById('noteModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeNoteModal();
-    }
-});
+    <script src="script.js"></script>
+</body>
+</html>
