@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #ffc0cb 0%, #ffb6c1 50%, #ffd1dc 100%);
+    background: #FBEAE5;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -46,7 +46,7 @@ body {
     border-radius: 50px;
     cursor: pointer;
     background: white;
-    color: #ff69b4;
+    color: #5A8F7B;
     font-weight: 600;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -55,10 +55,11 @@ body {
 .tab-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    background: #FFF4E6;
 }
 
 .tab-btn.active {
-    background: #ff69b4;
+    background: #7CAA7C;
     color: white;
 }
 
@@ -85,7 +86,7 @@ body {
 }
 
 .pomodoro-container h2 {
-    color: #ff69b4;
+    color: #5A8F7B;
     font-size: 2em;
     margin-bottom: 30px;
 }
@@ -105,7 +106,7 @@ body {
 }
 
 .setting-group label {
-    color: #ff69b4;
+    color: #5A8F7B;
     font-weight: 600;
     margin-bottom: 5px;
 }
@@ -113,15 +114,15 @@ body {
 .setting-group input {
     width: 80px;
     padding: 8px;
-    border: 2px solid #ffb6c1;
+    border: 2px solid #A8D5A3;
     border-radius: 10px;
     text-align: center;
     font-size: 1.1em;
-    color: #ff69b4;
+    color: #5A8F7B;
 }
 
 .timer-mode {
-    color: #ff69b4;
+    color: #5A8F7B;
     font-size: 1.2em;
     margin-bottom: 10px;
     font-weight: 600;
@@ -129,7 +130,7 @@ body {
 
 .timer-display {
     font-size: 5em;
-    color: #ff69b4;
+    color: #7CAA7C;
     font-weight: bold;
     margin: 30px 0;
     letter-spacing: 5px;
@@ -148,14 +149,14 @@ body {
     border: none;
     border-radius: 50px;
     cursor: pointer;
-    background: #ffb6c1;
+    background: #A8D5A3;
     color: white;
     font-weight: 600;
     transition: all 0.3s ease;
 }
 
 .timer-btn:hover {
-    background: #ff69b4;
+    background: #7CAA7C;
     transform: translateY(-2px);
 }
 
@@ -170,7 +171,7 @@ body {
 }
 
 .calculator-container h2 {
-    color: #ff69b4;
+    color: #5A8F7B;
     font-size: 2em;
     margin-bottom: 20px;
 }
@@ -180,11 +181,11 @@ body {
     padding: 20px;
     font-size: 2em;
     text-align: right;
-    border: 3px solid #ffb6c1;
+    border: 3px solid #A8D5A3;
     border-radius: 10px;
     margin-bottom: 15px;
-    background: #fff5f7;
-    color: #ff69b4;
+    background: #F0F8F0;
+    color: #5A8F7B;
     font-weight: 600;
 }
 
@@ -200,14 +201,14 @@ body {
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    background: #ffb6c1;
+    background: #A8D5A3;
     color: white;
     font-weight: 600;
     transition: all 0.2s ease;
 }
 
 .calc-btn:hover {
-    background: #ff69b4;
+    background: #7CAA7C;
     transform: scale(1.05);
 }
 
@@ -216,15 +217,15 @@ body {
 }
 
 .calc-btn.operator {
-    background: #ff69b4;
+    background: #6BA3D1;
 }
 
 .calc-btn.clear {
-    background: #ff1493;
+    background: #FF8C69;
 }
 
 .calc-btn.equals {
-    background: #ff69b4;
+    background: #7CAA7C;
     grid-column: span 2;
 }
 
